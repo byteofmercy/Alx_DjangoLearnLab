@@ -19,4 +19,14 @@ from django.urls import path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+=======
+from django.contrib import admin
+from django.urls import path, include  # include is required to include app URLs
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    
+    # Include the URLs from relationship_app
+    path('', include('relationship_app.urls')),
+>>>>>>> ead0755 (Second project: Django Views and URL Configuration)
 ]
