@@ -1,26 +1,15 @@
-# relationship_app/views.py
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+from .models import Book, Library
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
-from django.contrib.auth.views import LoginView, LogoutView
+# Show all books (with their authors)
+class BookListView(ListView):
+    model = Book
+    template_name = "relationship_app/list_books.html"
+    context_object_name = "books"
 
-# Registration view
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)  # Automatically log the user in after registration
-            return redirect('home')  # Redirect to home page (we will define it in urls)
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
-
-# Login view (using Django's built-in)
-class CustomLoginView(LoginView):
-    template_name = 'relationship_app/login.html'
-
-# Logout view (using Django's built-in)
-class CustomLogoutView(LogoutView):
-    template_name = 'relationship_app/logout.html'
+# Show details for a specific library (with books and librarian)
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = "relationship_app/library_detail.html"
+    context_object_name = "library"
