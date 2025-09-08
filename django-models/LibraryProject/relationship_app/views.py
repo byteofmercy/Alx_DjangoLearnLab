@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ add permission_required
+from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ important
 from .models import Book, UserProfile, Author
-
 
 # ---- Role-Based Access ----
 def is_admin(user):
@@ -57,4 +56,5 @@ def delete_book(request, book_id):
         book.delete()
         return redirect('list_books')
     return render(request, 'relationship_app/delete_book.html', {'book': book})
+
 
