@@ -1,5 +1,7 @@
+# relationship_app/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ important
+from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ must be exactly like this
 from .models import Book, UserProfile, Author
 
 # ---- Role-Based Access ----
@@ -23,6 +25,7 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
 
 # ---- Book Permission-Based Views ----
 @permission_required('relationship_app.can_add_book', raise_exception=True)

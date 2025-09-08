@@ -1,3 +1,7 @@
+
+
+# relationship_app/urls.py
+
 from django.urls import path
 from .views import (
     admin_view, librarian_view, member_view,
@@ -15,4 +19,3 @@ urlpatterns = [
     path('book/edit/<int:book_id>/', edit_book, name='edit_book'),
     path('book/delete/<int:book_id>/', delete_book, name='delete_book'),
 ]
-
