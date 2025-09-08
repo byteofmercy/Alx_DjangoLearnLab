@@ -1,7 +1,5 @@
-# relationship_app/views.py
-
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ must be exactly like this
+from django.contrib.auth.decorators import permission_required, user_passes_test
 from .models import Book, UserProfile, Author
 
 # ---- Role-Based Access ----
