@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import user_passes_test, permission_required  # ✅ add permission_required
 from .models import Book, UserProfile, Author
+
 
 # ---- Role-Based Access ----
 def is_admin(user):
