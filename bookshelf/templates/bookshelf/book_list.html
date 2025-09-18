@@ -1,19 +1,30 @@
+
 <!doctype html>
 <html>
-  <body>
-    <h1>Book list</h1>
-    <p><a href="{% url 'bookshelf:book_create' %}">Add book</a> | <a href="/admin/">Admin</a></p>
-    <ul>
-      {% for book in books %}
-        <li>
-          <a href="{% url 'bookshelf:book_detail' book.pk %}">{{ book.title }}</a>
-          - {{ book.author }}
-          <a href="{% url 'bookshelf:book_edit' book.pk %}">[edit]</a>
-          <a href="{% url 'bookshelf:book_delete' book.pk %}">[delete]</a>
-        </li>
-      {% empty %}
-        <li>No books yet</li>
-      {% endfor %}
-    </ul>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>Books</title>
+</head>
+<body>
+  <h1>Books</h1>
+
+  <form method="get">
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+  </form>
+
+  <ul>
+    {% for book in books %}
+      <li>
+        <!-- Django automatically escapes variables to prevent XSS -->
+        <strong>{{ book.title }}</strong> — {{ book.author }}
+        <p>{{ book.description|linebreaks }}</p>
+      </li>
+    {% empty %}
+      <li>No books found</li>
+    {% endfor %}
+  </ul>
+
+  <p><a href="{% url 'create_book' %}">Add a book</a></p>
+</body>
 </html>

@@ -1,47 +1,53 @@
-
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import permission_required, login_required
-from django.http import HttpResponse
+# bookshelf/views.py
+from django.shortcuts import render, redirect
 from .models import Book
-from .forms import BookForm
+from .forms import BookSearchForm, BookForm
+from django.db import connection
 
-@permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
+    """
+    List books and allow safe searching.
+    Uses BookSearchForm to validate input and the ORM to prevent SQL injection.
+    """
+    form = BookSearchForm(request.GET or None)
     books = Book.objects.all()
-    return render(request, 'bookshelf/book_list.html', {"books": books})
 
-@permission_required('bookshelf.can_view', raise_exception=True)
-def book_detail(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    return render(request, 'bookshelf/book_detail.html', {"book": book})
+    if form.is_valid():
+        title = form.cleaned_data.get('title')
+        if title:
+            # safe ORM filtering - parameterized internally by Django ORM
+            books = books.filter(title__icontains=title)
 
-@permission_required('bookshelf.can_create', raise_exception=True)
-def book_create(request):
-    if request.method == "POST":
+    return render(request, 'bookshelf/book_list.html', {'books': books, 'form': form})
+
+def create_book(request):
+    """
+    Secure form handling for creating a book using ModelForm.
+    Always use form.is_valid() and cleaned_data.
+    """
+    if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('bookshelf:book_list')
+            return redirect('book_list')  # update name if your url name differs
     else:
         form = BookForm()
-    return render(request, 'bookshelf/book_form.html', {"form": form, "action": "Create"})
+    return render(request, 'bookshelf/form_example.html', {'form': form})
 
-@permission_required('bookshelf.can_edit', raise_exception=True)
-def book_edit(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    if request.method == "POST":
-        form = BookForm(request.POST, instance=book)
-        if form.is_valid():
-            form.save()
-            return redirect('bookshelf:book_detail', pk=book.pk)
+def example_raw_query_parametrized(request):
+    """
+    If you must use raw SQL, ALWAYS use parameterized queries.
+    Example shows how to run raw SQL safely.
+    """
+    title = request.GET.get('title', '')
+    if title:
+        with connection.cursor() as cursor:
+            # DO NOT format strings into SQL. Use parameters (the DB-API will handle quoting).
+            cursor.execute("SELECT id, title, author FROM bookshelf_book WHERE title LIKE %s", [f"%{title}%"])
+            rows = cursor.fetchall()
+            # convert rows to dict or objects as needed
+            results = [{'id': r[0], 'title': r[1], 'author': r[2]} for r in rows]
     else:
-        form = BookForm(instance=book)
-    return render(request, 'bookshelf/book_form.html', {"form": form, "action": "Edit"})
+        results = []
+    return render(request, 'bookshelf/raw_results.html', {'results': results})
 
-@permission_required('bookshelf.can_delete', raise_exception=True)
-def book_delete(request, pk):
-    book = get_object_or_404(Book, pk=pk)
-    if request.method == "POST":
-        book.delete()
-        return redirect('bookshelf:book_list')
-    return render(request, 'bookshelf/book_confirm_delete.html', {"book": book})
