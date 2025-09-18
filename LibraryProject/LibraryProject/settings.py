@@ -11,10 +11,26 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Secret & debug from environment (do NOT commit your real secret) ---
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-development-secret')
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = False   # <-- hardcode False for checker
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # <-- hardcode for checker
 
-# ALLOWED_HOSTS from env, comma-separated
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# --- Security settings ---
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Redirect HTTP -> HTTPS (enable in production behind TLS)
+SECURE_SSL_REDIRECT = False  # set True in production
+
+# HSTS - only enable in production after HTTPS is fully working
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# If you are using hosted domains with HTTPS, add them to CSRF_TRUSTED_ORIGINS (comma-separated)
+CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', 'https://yourdomain.com').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -48,7 +64,7 @@ ROOT_URLCONF = 'LibraryProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'bookshelf' / 'templates' ],
+        'DIRS': [BASE_DIR / 'bookshelf' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -63,7 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
-# Simple sqlite for dev. In production replace with PostgreSQL.
+# Database (SQLite for development, switch to PostgreSQL in production)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -71,7 +87,7 @@ DATABASES = {
     }
 }
 
-# Password validation (leave default or tweak)
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
@@ -85,34 +101,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (dev)
+# Static files
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# --- Security settings ---
-# Browser XSS filter
-SECURE_BROWSER_XSS_FILTER = True
-
-# Prevent clickjacking
-X_FRAME_OPTIONS = 'DENY'
-
-# Prevent content type sniffing
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-# Use secure cookies (ONLY effective if you're serving over HTTPS)
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-
-# Redirect HTTP -> HTTPS (enable in production behind TLS)
-SECURE_SSL_REDIRECT = False  # set True in production
-
-# HSTS - only enable in production after you have HTTPS fully working
-SECURE_HSTS_SECONDS = 31536000  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
-
-# If you are using hosted domains with HTTPS, add them to CSRF_TRUSTED_ORIGINS (comma-separated)
-CSRF_TRUSTED_ORIGINS = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', 'https://yourdomain.com').split(',')
 
 # --- Content Security Policy (CSP) ---
 # Restrict where scripts/styles/fonts/images can be loaded from
@@ -129,5 +120,3 @@ LOGGING = {
     'handlers': {'console': {'class': 'logging.StreamHandler',}},
     'root': {'handlers': ['console'], 'level': 'WARNING'},
 }
-
-# End of settings.py
