@@ -1,19 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>Create Book</title>
+    <title>Example Form</title>
 </head>
 <body>
-  <h1>Create Book (secure form)</h1>
-
-  <!-- Forms MUST include csrf_token to be protected against CSRF attacks -->
-  <form method="post" novalidate>
+<h1>Example Form</h1>
+{% if success %}
+    <p>Form submitted successfully!</p>
+{% endif %}
+<form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Save</button>
-  </form>
-
-  <p><a href="{% url 'book_list' %}">Back to list</a></p>
+    <button type="submit">Submit</button>
+</form>
 </body>
 </html>
+
