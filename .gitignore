@@ -1,8 +1,7 @@
-*.pyc
-__pycache__/
+venv/
+LibraryProject/venv/
 db.sqlite3
 *.sqlite3
-*.log
-.env
-*.py[cod]
-*.egg-info/
+__pycache__/
+*.pyc
+
