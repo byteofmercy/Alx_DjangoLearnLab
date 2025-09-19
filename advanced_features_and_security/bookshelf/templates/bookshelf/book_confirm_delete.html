@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>Delete book</h1>
+    <p>Are you sure you want to delete "{{ book }}"?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Yes, delete</button>
+    </form>
+    <p><a href="{% url 'bookshelf:book_list' %}">No, go back</a></p>
+  </body>
+</html>
